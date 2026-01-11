@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamHub - Opravená Verzia</title>
+    <title>StreamHub - Pro Upload Stats</title>
     <style>
         :root {
             --primary: #ef4444;
@@ -16,7 +16,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-main);
             min-height: 100vh;
@@ -24,212 +24,212 @@
 
         /* Header */
         .header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            position: sticky; top: 0; z-index: 100;
             background: rgba(15, 23, 42, 0.95);
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding: 0.75rem 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            padding: 0.8rem 1.5rem;
+            display: flex; align-items: center; justify-content: space-between;
         }
 
-        .logo { font-size: 1.5rem; font-weight: bold; color: white; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: white; text-decoration: none; }
         .logo span { color: var(--primary); }
 
-        .search-container { flex: 1; max-width: 600px; margin: 0 1rem; }
+        .search-box { flex: 1; max-width: 500px; margin: 0 1rem; }
         .search-input {
-            width: 100%;
-            background: #334155;
-            border: none;
-            padding: 0.75rem 1rem;
-            border-radius: 99px;
-            color: white;
+            width: 100%; background: #334155; border: none; padding: 0.8rem 1.2rem;
+            border-radius: 99px; color: white; outline: none;
         }
 
-        .upload-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 99px;
-            font-weight: bold;
-            cursor: pointer;
+        .btn-main {
+            background: var(--primary); color: white; border: none;
+            padding: 0.8rem 1.5rem; border-radius: 99px; font-weight: bold; cursor: pointer;
         }
 
         /* Layout */
-        .main-container {
-            display: flex;
-            padding: 1.5rem;
-            gap: 1.5rem;
-        }
-
-        .sidebar {
-            width: 200px;
-            flex-shrink: 0;
-            display: none;
-        }
-        @media(min-width: 768px) { .sidebar { display: block; } }
-
-        .cat-btn {
-            display: block;
-            width: 100%;
-            text-align: left;
-            padding: 0.75rem;
-            background: transparent;
-            color: var(--text-muted);
-            border: none;
-            cursor: pointer;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-        }
-        .cat-btn.active { background: #334155; color: white; font-weight: bold; }
-        .cat-btn:hover { background: rgba(255,255,255,0.1); }
-
-        /* Grid */
-        .video-grid {
-            flex: 1;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .video-card { cursor: pointer; transition: transform 0.2s; }
-        .video-card:hover { transform: translateY(-5px); }
-
-        .thumbnail {
-            aspect-ratio: 16/9;
-            background: #334155;
-            border-radius: 0.8rem;
-            overflow: hidden;
-            margin-bottom: 0.75rem;
-        }
-        .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+        .app-container { display: flex; padding: 1.5rem; gap: 2rem; }
         
-        .video-info h3 { font-size: 1rem; margin-bottom: 0.25rem; line-height: 1.4; }
-        .video-meta { font-size: 0.85rem; color: var(--text-muted); }
+        .sidebar { width: 220px; display: none; }
+        @media(min-width: 800px) { .sidebar { display: block; } }
 
-        /* Modals */
-        .modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
-            display: none; align-items: center; justify-content: center; z-index: 1000;
+        .menu-item {
+            display: block; width: 100%; text-align: left; padding: 0.8rem;
+            background: transparent; border: none; color: #cbd5e1; cursor: pointer;
+            border-radius: 0.5rem; margin-bottom: 0.5rem; font-size: 1rem;
         }
-        .modal.show { display: flex; }
+        .menu-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .menu-item.active { background: #334155; color: white; font-weight: bold; border-left: 4px solid var(--primary); }
+
+        .grid {
+            flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;
+        }
+
+        /* Video Card */
+        .card { cursor: pointer; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); }
+        .thumb {
+            aspect-ratio: 16/9; background: #334155; border-radius: 0.8rem;
+            overflow: hidden; margin-bottom: 0.8rem; position: relative;
+        }
+        .thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .duration {
+            position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8);
+            padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold;
+        }
+
+        /* Upload Modal */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000;
+            display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);
+        }
+        .modal-overlay.open { display: flex; }
         
-        .modal-content {
-            background: var(--bg-card);
-            padding: 2rem;
-            border-radius: 1rem;
-            width: 90%; max-width: 500px;
+        .modal-box {
+            background: var(--bg-card); width: 90%; max-width: 550px;
+            padding: 2rem; border-radius: 1rem; border: 1px solid #334155;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        .form-group { margin-bottom: 1rem; }
-        .form-control {
-            width: 100%; padding: 0.75rem;
-            background: #0f172a; border: 1px solid #334155;
-            color: white; border-radius: 0.5rem;
+        .input-group { margin-bottom: 1.2rem; }
+        .input-field {
+            width: 100%; padding: 0.8rem; background: #0f172a;
+            border: 1px solid #334155; color: white; border-radius: 0.5rem;
         }
+
+        /* PROGRESS STATS STYLES */
+        .progress-container {
+            margin-top: 1.5rem; padding: 1rem; background: #0f172a;
+            border-radius: 0.5rem; border: 1px solid #334155; display: none;
+        }
+        .progress-bar-bg {
+            width: 100%; height: 8px; background: #334155;
+            border-radius: 4px; overflow: hidden; margin-bottom: 10px;
+        }
+        .progress-bar-fill {
+            height: 100%; background: linear-gradient(90deg, var(--primary), #fbbf24);
+            width: 0%; transition: width 0.2s linear;
+        }
+        .stats-row {
+            display: flex; justify-content: space-between; font-size: 0.85rem;
+            color: #cbd5e1; margin-bottom: 5px; font-family: monospace;
+        }
+        .stat-value { color: white; font-weight: bold; }
 
         /* Player */
-        .player-modal {
-            position: fixed; inset: 0; background: black;
-            display: none; flex-direction: column; z-index: 2000;
+        .fullscreen-player {
+            position: fixed; inset: 0; background: black; z-index: 2000;
+            display: none; flex-direction: column;
         }
-        .player-modal.show { display: flex; }
+        .fullscreen-player.open { display: flex; }
+        .video-stage { flex: 1; display: flex; align-items: center; justify-content: center; }
+        video { max-width: 100%; max-height: 100vh; outline: none; }
         
-        .video-wrapper { width: 100%; height: 60vh; background: black; display: flex; align-items: center; justify-content: center; }
-        video { max-width: 100%; max-height: 100%; }
-        
-        .player-info { padding: 1.5rem; max-width: 1200px; margin: 0 auto; width: 100%; }
-        .player-actions { display: flex; gap: 1rem; margin-top: 1rem; }
-        
-        .action-btn {
-            background: #334155; color: white; border: none;
-            padding: 0.5rem 1rem; border-radius: 99px; cursor: pointer;
-            display: flex; align-items: center; gap: 5px;
-        }
-        .action-btn.liked { background: white; color: black; }
-        .close-btn {
-            position: absolute; top: 1rem; right: 1rem;
-            background: rgba(255,255,255,0.2); border: none;
-            color: white; width: 40px; height: 40px; border-radius: 50%;
-            cursor: pointer; font-size: 1.5rem;
+        .controls-layer { padding: 1.5rem; background: linear-gradient(to top, black, transparent); }
+        .video-title { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .close-player {
+            position: absolute; top: 20px; right: 20px; color: white;
+            background: rgba(255,255,255,0.1); border: none; width: 45px; height: 45px;
+            border-radius: 50%; font-size: 1.5rem; cursor: pointer;
         }
     </style>
 </head>
 <body>
 
     <header class="header">
-        <a href="#" class="logo" onclick="location.reload()">▶ <span>StreamHub</span></a>
-        <div class="search-container">
-            <input type="text" class="search-input" placeholder="Hľadať videá..." onkeyup="app.filterVideos(this.value)">
+        <a href="#" class="logo" onclick="location.reload()">StreamHub<span>Pro</span></a>
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="Hľadať videá..." onkeyup="app.filter(this.value)">
         </div>
-        <button class="upload-btn" onclick="app.toggleModal('uploadModal')">Nahrať</button>
+        <button class="btn-main" onclick="app.toggleModal(true)">+ Nahrať</button>
     </header>
 
-    <div class="main-container">
+    <div class="app-container">
         <aside class="sidebar" id="sidebar">
-            <!-- Vygenerované cez JS -->
+            <!-- JS Generated -->
         </aside>
 
-        <main class="video-grid" id="videoGrid">
-            <!-- Vygenerované cez JS -->
+        <main class="grid" id="grid">
+            <!-- JS Generated -->
         </main>
     </div>
 
     <!-- Upload Modal -->
-    <div id="uploadModal" class="modal">
-        <div class="modal-content">
-            <h2 style="margin-bottom: 1rem;">Nahrať video</h2>
-            <div class="form-group">
-                <input type="text" id="vTitle" class="form-control" placeholder="Názov videa">
+    <div id="uploadModal" class="modal-overlay">
+        <div class="modal-box">
+            <h2 style="margin-bottom: 1.5rem">Nahrať nové video</h2>
+            
+            <div id="uploadForm">
+                <div class="input-group">
+                    <label style="display:block; color:#94a3b8; margin-bottom:5px">Názov videa</label>
+                    <input type="text" id="uTitle" class="input-field" placeholder="Napr. Môj Gameplay #1">
+                </div>
+                
+                <div class="input-group">
+                    <label style="display:block; color:#94a3b8; margin-bottom:5px">Kategória</label>
+                    <select id="uCat" class="input-field">
+                        <option value="all">Všeobecné</option>
+                        <option value="game">🎮 Hry</option>
+                        <option value="music">🎵 Hudba</option>
+                        <option value="tech">💻 Tech</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label style="display:block; color:#94a3b8; margin-bottom:5px">Video súbor (MP4)</label>
+                    <input type="file" id="uFile" accept="video/mp4,video/webm" class="input-field">
+                </div>
+
+                <div class="input-group">
+                    <label style="display:block; color:#94a3b8; margin-bottom:5px">Miniatúra (Obrázok)</label>
+                    <input type="file" id="uThumb" accept="image/*" class="input-field">
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:1.5rem">
+                    <button class="btn-main" style="flex:1" onclick="app.startUpload()">Začať nahrávanie</button>
+                    <button class="btn-main" style="flex:1; background:#334155" onclick="app.toggleModal(false)">Zrušiť</button>
+                </div>
             </div>
-            <div class="form-group">
-                <select id="vCategory" class="form-control">
-                    <option value="all">Všeobecné</option>
-                    <option value="game">🎮 Hry</option>
-                    <option value="music">🎵 Hudba</option>
-                    <option value="tech">💻 Tech</option>
-                </select>
+
+            <!-- DETAILNÉ ŠTATISTIKY NAHRÁVANIA -->
+            <div id="uploadStats" class="progress-container">
+                <div style="margin-bottom:10px; font-weight:bold; color:var(--primary)">Nahrávam video...</div>
+                
+                <div class="progress-bar-bg">
+                    <div id="progressBar" class="progress-bar-fill"></div>
+                </div>
+                
+                <div class="stats-row">
+                    <span>Nahrané:</span>
+                    <span id="statSize" class="stat-value">0 MB / 0 MB</span>
+                </div>
+                <div class="stats-row">
+                    <span>Rýchlosť:</span>
+                    <span id="statSpeed" class="stat-value">0 MB/s</span>
+                </div>
+                <div class="stats-row">
+                    <span>Zostávajúci čas:</span>
+                    <span id="statTime" class="stat-value">--:--</span>
+                </div>
             </div>
-            <div class="form-group">
-                <label style="display:block; margin-bottom:5px">Video súbor (MP4)</label>
-                <input type="file" id="vFile" accept="video/mp4" class="form-control">
-            </div>
-            <div class="form-group">
-                <label style="display:block; margin-bottom:5px">Miniatúra (Obrázok)</label>
-                <input type="file" id="tFile" accept="image/*" class="form-control">
-            </div>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="upload-btn" onclick="app.uploadVideo()" id="btnUploadAction" style="flex:1">Publikovať</button>
-                <button class="upload-btn" onclick="app.toggleModal('uploadModal')" style="background:#334155; flex:1">Zrušiť</button>
-            </div>
+
         </div>
     </div>
 
-    <!-- Player Modal -->
-    <div id="playerModal" class="player-modal">
-        <button class="close-btn" onclick="app.closePlayer()">✕</button>
-        <div class="video-wrapper">
-            <video id="mainVideo" controls autoplay></video>
+    <!-- Player -->
+    <div id="player" class="fullscreen-player">
+        <button class="close-player" onclick="app.closePlayer()">✕</button>
+        <div class="video-stage">
+            <video id="videoEl" controls autoplay></video>
         </div>
-        <div class="player-info">
-            <h1 id="pTitle" style="font-size:1.5rem; margin-bottom:0.5rem"></h1>
-            <div style="color:var(--text-muted); font-size:0.9rem">
-                <span id="pViews"></span> zobrazení • <span id="pDate"></span>
+        <div class="controls-layer">
+            <h1 id="pTitle" class="video-title"></h1>
+            <div style="display:flex; gap:15px; color:#cbd5e1;">
+                <span id="pViews"></span>
+                <span id="pLikes" style="cursor:pointer" onclick="app.likeVideo()">👍 0</span>
+                <span onclick="app.deleteVideo()" style="color:#ef4444; cursor:pointer; margin-left:auto">🗑️ Vymazať video</span>
             </div>
-            <div class="player-actions">
-                <button class="action-btn" id="btnLike" onclick="app.toggleLike()">
-                    <span>👍</span> <span id="pLikes"></span>
-                </button>
-                <button class="action-btn" onclick="app.deleteVideo()" style="color:#ef4444; background:rgba(239,68,68,0.1)">
-                    🗑️ Zmazať
-                </button>
+            <div style="margin-top:10px; font-size:0.8rem; color:#64748b">
+                Max Zobrazenia: 9.20B | Max Lajky: 33M
             </div>
-            <p style="margin-top:1rem; color:#64748b; font-size:0.8rem">
-                Limit zobrazení: 9.20B | Limit lajkov: 33M
-            </p>
         </div>
     </div>
 
@@ -237,294 +237,283 @@
         const app = {
             db: null,
             videos: [],
-            categories: [
-                { id: 'all', name: '🏠 Domov' },
-                { id: 'game', name: '🎮 Hry' },
-                { id: 'music', name: '🎵 Hudba' },
-                { id: 'tech', name: '💻 Tech' }
+            cats: [
+                {id:'all', name:'🏠 Domov'},
+                {id:'game', name:'🎮 Hry'},
+                {id:'music', name:'🎵 Hudba'},
+                {id:'tech', name:'💻 Tech'}
             ],
-            selectedCat: 'all',
-            currentId: null,
+            currCat: 'all',
+            currId: null,
 
-            // Inicializácia
             init: async function() {
-                try {
-                    await this.initDB();
+                // Inicializácia DB (IndexedDB)
+                const req = indexedDB.open('StreamHub_v4_Pro', 1);
+                req.onupgradeneeded = e => {
+                    const db = e.target.result;
+                    if(!db.objectStoreNames.contains('videos')) db.createObjectStore('videos');
+                };
+                req.onsuccess = e => {
+                    this.db = e.target.result;
                     this.loadMeta();
-                    this.renderSidebar();
-                    this.renderGrid();
-                    console.log("App initialized successfully");
-                } catch (e) {
-                    console.error("Init failed:", e);
-                    alert("Chyba pri štarte aplikácie. Skontroluj konzolu.");
-                }
+                    this.renderUI();
+                };
             },
 
-            // Databáza (IndexedDB)
-            initDB: function() {
-                return new Promise((resolve, reject) => {
-                    // Dôležité: Zmenil som názov DB na 'StreamHub_Final_v3' pre istotu
-                    const request = indexedDB.open('StreamHub_Final_v3', 1);
-
-                    request.onerror = (event) => {
-                        console.error("DB Error:", event.target.error);
-                        reject(event.target.error);
-                    };
-
-                    request.onupgradeneeded = (event) => {
-                        const db = event.target.result;
-                        if (!db.objectStoreNames.contains('videos')) {
-                            db.createObjectStore('videos'); // Store pre video súbory
-                        }
-                    };
-
-                    request.onsuccess = (event) => {
-                        this.db = event.target.result;
-                        resolve();
-                    };
-                });
-            },
-
-            // LocalStorage pre metadáta (texty)
             loadMeta: function() {
-                const data = localStorage.getItem('sh_meta_v3');
-                this.videos = data ? JSON.parse(data) : [];
+                this.videos = JSON.parse(localStorage.getItem('sh_meta_v4') || '[]');
+            },
+            saveMeta: function() {
+                localStorage.setItem('sh_meta_v4', JSON.stringify(this.videos));
             },
 
-            saveMeta: function() {
-                localStorage.setItem('sh_meta_v3', JSON.stringify(this.videos));
+            // Formátovanie veľkosti (Bytes -> MB/GB)
+            fmtSize: function(bytes) {
+                if(bytes === 0) return '0 MB';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             },
 
             // Formátovanie čísel (Youtube style)
-            fmt: function(num) {
-                if (num >= 1000000000) return (num / 1000000000).toFixed(2) + 'B';
-                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-                if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            fmtNum: function(num) {
+                if(num >= 1e9) return (num/1e9).toFixed(2)+'B';
+                if(num >= 1e6) return (num/1e6).toFixed(1)+'M';
+                if(num >= 1e3) return (num/1e3).toFixed(1)+'K';
                 return num;
             },
 
-            // Konverzia súboru na Base64
-            toBase64: function(file) {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
+            // Formátovanie času (Seconds -> MM:SS)
+            fmtTime: function(seconds) {
+                if(!isFinite(seconds) || seconds < 0) return "Výpočet...";
+                const m = Math.floor(seconds / 60);
+                const s = Math.floor(seconds % 60);
+                return `${m}m ${s}s`;
             },
 
-            // UI Funkcie
-            toggleModal: function(id) {
-                const el = document.getElementById(id);
-                if(el) el.classList.toggle('show');
-            },
-
-            renderSidebar: function() {
-                const container = document.getElementById('sidebar');
-                container.innerHTML = this.categories.map(c => `
-                    <button class="cat-btn ${c.id === this.selectedCat ? 'active' : ''}" 
-                            onclick="app.selectCat('${c.id}')">
-                        ${c.name}
-                    </button>
+            renderUI: function(filter = '') {
+                // Sidebar
+                document.getElementById('sidebar').innerHTML = this.cats.map(c => `
+                    <button class="menu-item ${c.id === this.currCat ? 'active' : ''}" 
+                            onclick="app.setCat('${c.id}')">${c.name}</button>
                 `).join('');
-            },
 
-            selectCat: function(id) {
-                this.selectedCat = id;
-                this.renderSidebar();
-                this.renderGrid();
-            },
+                // Grid
+                const grid = document.getElementById('grid');
+                const term = filter.toLowerCase();
+                const filtered = this.videos.filter(v => 
+                    (this.currCat === 'all' || v.cat === this.currCat) && 
+                    v.title.toLowerCase().includes(term)
+                );
 
-            renderGrid: function(searchTerm = '') {
-                const grid = document.getElementById('videoGrid');
-                const term = searchTerm.toLowerCase();
-
-                const filtered = this.videos.filter(v => {
-                    const matchCat = this.selectedCat === 'all' || v.cat === this.selectedCat;
-                    const matchSearch = v.title.toLowerCase().includes(term);
-                    return matchCat && matchSearch;
-                });
-
-                if (filtered.length === 0) {
-                    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:2rem; color:#64748b">Žiadne videá sa nenašli.</div>';
+                if(filtered.length === 0) {
+                    grid.innerHTML = `<div style="color:#64748b; margin-top:20px">Žiadne videá.</div>`;
                     return;
                 }
 
                 grid.innerHTML = filtered.map(v => `
-                    <div class="video-card" onclick="app.playVideo('${v.id}')">
-                        <div class="thumbnail">
-                            ${v.thumb ? `<img src="${v.thumb}">` : '<div style="height:100%; display:grid; place-items:center;">🎬</div>'}
+                    <div class="card" onclick="app.play('${v.id}')">
+                        <div class="thumb">
+                            ${v.thumb ? `<img src="${v.thumb}">` : ''}
+                            <div class="duration">${v.duration || 'HD'}</div>
                         </div>
-                        <div class="video-info">
-                            <h3>${v.title}</h3>
-                            <div class="video-meta">
-                                ${this.fmt(v.views)} zobrazení • ${v.date}
-                            </div>
+                        <h3 style="font-size:1rem; margin-bottom:5px; line-height:1.4">${v.title}</h3>
+                        <div style="font-size:0.85rem; color:#94a3b8">
+                            ${this.fmtNum(v.views)} zobrazení • ${v.date}
                         </div>
                     </div>
                 `).join('');
             },
 
-            // LOGIKA NAHRÁVANIA
-            uploadVideo: async function() {
-                const title = document.getElementById('vTitle').value;
-                const cat = document.getElementById('vCategory').value;
-                const videoFile = document.getElementById('vFile').files[0];
-                const thumbFile = document.getElementById('tFile').files[0];
+            setCat: function(id) { this.currCat = id; this.renderUI(); },
+            filter: function(val) { this.renderUI(val); },
+            toggleModal: function(show) { 
+                const m = document.getElementById('uploadModal');
+                m.classList.toggle('open', show);
+                if(show) {
+                    // Reset UI
+                    document.getElementById('uploadForm').style.display = 'block';
+                    document.getElementById('uploadStats').style.display = 'none';
+                    document.getElementById('uTitle').value = '';
+                    document.getElementById('uFile').value = '';
+                }
+            },
 
-                if (!title || !videoFile) {
-                    alert("Musíš zadať názov a vybrať video!");
-                    return;
+            // --- JADRO UPLOAD SYSTÉMU ---
+            startUpload: async function() {
+                const title = document.getElementById('uTitle').value;
+                const cat = document.getElementById('uCat').value;
+                const file = document.getElementById('uFile').files[0];
+                const thumbFile = document.getElementById('uThumb').files[0];
+
+                if(!title || !file) { alert("Chýba názov alebo súbor!"); return; }
+
+                // Prepnúť UI na štatistiky
+                document.getElementById('uploadForm').style.display = 'none';
+                const statsBox = document.getElementById('uploadStats');
+                statsBox.style.display = 'block';
+
+                // Premenné pre štatistiky
+                const totalSize = file.size;
+                const startTime = Date.now();
+                let loaded = 0;
+                let lastLoaded = 0;
+                let lastTime = startTime;
+                
+                // Chunk Reader Setup (Pre simuláciu čítania a merania rýchlosti)
+                // Čítame po 2MB aby sme nezasekli UI a mohli merať rýchlosť
+                const chunkSize = 2 * 1024 * 1024; 
+                let offset = 0;
+                const reader = new FileReader();
+
+                // Elementy UI
+                const elBar = document.getElementById('progressBar');
+                const elSize = document.getElementById('statSize');
+                const elSpeed = document.getElementById('statSpeed');
+                const elTime = document.getElementById('statTime');
+
+                reader.onload = (e) => {
+                    // Chunk načítaný (v pamäti, ale hneď zahodíme aby sme šetrili RAM)
+                    // Reálne ale súbor 'spracovávame', takže disk pracuje
+                    loaded += e.target.result.byteLength;
+                    offset += chunkSize;
+
+                    // Výpočty každých cca 500ms alebo pri každom chunku
+                    const now = Date.now();
+                    const timeDiff = (now - lastTime) / 1000; // sekundy
+
+                    if(timeDiff >= 0.5 || loaded === totalSize) {
+                        const bytesDiff = loaded - lastLoaded;
+                        const speedBps = bytesDiff / timeDiff; // Bytes per second
+                        const speedMBps = (speedBps / 1024 / 1024).toFixed(2);
+                        
+                        const remainingBytes = totalSize - loaded;
+                        const remainingSeconds = speedBps > 0 ? remainingBytes / speedBps : 0;
+
+                        // Update UI
+                        const percent = (loaded / totalSize) * 100;
+                        elBar.style.width = percent + '%';
+                        elSize.innerText = `${this.fmtSize(loaded)} / ${this.fmtSize(totalSize)}`;
+                        elSpeed.innerText = `${speedMBps} MB/s`;
+                        elTime.innerText = this.fmtTime(remainingSeconds);
+
+                        // Reset pre ďalší interval
+                        lastTime = now;
+                        lastLoaded = loaded;
+                    }
+
+                    // Čítaj ďalší chunk
+                    if(offset < totalSize) {
+                        readNextChunk();
+                    } else {
+                        finishUpload();
+                    }
+                };
+
+                reader.onerror = () => { alert("Chyba čítania súboru!"); this.toggleModal(false); };
+
+                function readNextChunk() {
+                    const slice = file.slice(offset, offset + chunkSize);
+                    reader.readAsArrayBuffer(slice);
                 }
 
-                const btn = document.getElementById('btnUploadAction');
-                btn.innerText = "Nahrávam...";
-                btn.disabled = true;
-
-                try {
-                    const id = Date.now().toString();
-                    let thumbData = null;
-                    if (thumbFile) thumbData = await this.toBase64(thumbFile);
-
-                    // 1. Uložiť Blob do IndexedDB
-                    const tx = this.db.transaction('videos', 'readwrite');
-                    const store = tx.objectStore('videos');
+                // Funkcia pre finalizáciu (Uloženie do DB)
+                const finishUpload = async () => {
+                    elBar.style.width = '100%';
+                    elTime.innerText = "Ukladám na disk...";
                     
-                    const request = store.put(videoFile, id);
+                    let thumbData = null;
+                    if(thumbFile) {
+                        thumbData = await new Promise(r => {
+                            const fr = new FileReader();
+                            fr.onload = e => r(e.target.result);
+                            fr.readAsDataURL(thumbFile);
+                        });
+                    }
 
-                    request.onsuccess = () => {
-                        // 2. Uložiť Meta do LocalStorage
-                        const newVideo = {
-                            id: id,
+                    // Uloženie do IndexedDB
+                    const tx = this.db.transaction('videos', 'readwrite');
+                    // Ukladáme priamo File objekt (referenciu), je to bleskové
+                    tx.objectStore('videos').put(file, file.name + startTime); 
+
+                    tx.oncomplete = () => {
+                        const newVid = {
+                            id: file.name + startTime,
                             title: title,
                             cat: cat,
                             thumb: thumbData,
                             views: 0,
                             likes: 0,
-                            liked: false,
-                            date: new Date().toLocaleDateString()
+                            date: new Date().toLocaleDateString(),
+                            size: this.fmtSize(totalSize)
                         };
-                        this.videos.unshift(newVideo);
+                        this.videos.unshift(newVid);
                         this.saveMeta();
-
-                        // Reset UI
-                        this.toggleModal('uploadModal');
-                        this.renderGrid();
-                        btn.innerText = "Publikovať";
-                        btn.disabled = false;
-                        
-                        // Vyčistiť inputy
-                        document.getElementById('vTitle').value = '';
-                        document.getElementById('vFile').value = '';
+                        this.toggleModal(false);
+                        this.renderUI();
+                        alert("Video úspešne nahraté!");
                     };
+                };
 
-                    request.onerror = (e) => {
-                        console.error("DB Save Error:", e);
-                        alert("Chyba pri ukladaní videa (možno máš plný disk?).");
-                        btn.innerText = "Publikovať";
-                        btn.disabled = false;
-                    };
-
-                } catch (e) {
-                    console.error(e);
-                    alert("Neočakávaná chyba.");
-                    btn.innerText = "Publikovať";
-                    btn.disabled = false;
-                }
+                // Štart procesu
+                readNextChunk();
             },
 
-            filterVideos: function(val) {
-                this.renderGrid(val);
-            },
+            // --- PREHRÁVAČ ---
+            play: function(id) {
+                this.currId = id;
+                const v = this.videos.find(x => x.id === id);
+                if(!v) return;
 
-            // LOGIKA PREHRÁVANIA
-            playVideo: function(id) {
-                this.currentId = id;
-                const video = this.videos.find(v => v.id === id);
-                if (!video) return;
-
-                // Update UI
-                document.getElementById('pTitle').innerText = video.title;
-                document.getElementById('pDate').innerText = video.date;
+                if(v.views < 9.2e9) { v.views++; this.saveMeta(); }
                 
-                // Zobrazenia a Lajky update
-                if (video.views < 9200000000) {
-                    video.views++;
-                    this.saveMeta();
-                }
-                this.updatePlayerUI(video);
-
-                // Načítať video z DB
+                document.getElementById('pTitle').innerText = v.title;
+                document.getElementById('pViews').innerText = this.fmtNum(v.views) + ' zobrazení';
+                document.getElementById('pLikes').innerText = '👍 ' + this.fmtNum(v.likes);
+                
+                // Načítať video
                 const tx = this.db.transaction('videos', 'readonly');
-                const store = tx.objectStore('videos');
-                const request = store.get(id);
-
-                request.onsuccess = (e) => {
-                    const blob = e.target.result;
-                    if (blob) {
-                        const url = URL.createObjectURL(blob);
-                        document.getElementById('mainVideo').src = url;
-                        document.getElementById('playerModal').classList.add('show');
+                const req = tx.objectStore('videos').get(id);
+                req.onsuccess = e => {
+                    const file = e.target.result;
+                    if(file) {
+                        const url = URL.createObjectURL(file);
+                        document.getElementById('videoEl').src = url;
+                        document.getElementById('player').classList.add('open');
                     } else {
-                        alert("Video súbor sa nenašiel (asi bol zmazaný z cache).");
+                        alert("Súbor sa nenašiel.");
                     }
                 };
-                
-                request.onerror = () => alert("Chyba pri načítaní videa.");
-            },
-
-            toggleLike: function() {
-                const video = this.videos.find(v => v.id === this.currentId);
-                if (!video) return;
-
-                if (video.liked) {
-                    video.likes--;
-                    video.liked = false;
-                } else {
-                    if (video.likes < 33000000) {
-                        video.likes++;
-                        video.liked = true;
-                    }
-                }
-                this.saveMeta();
-                this.updatePlayerUI(video);
-                this.renderGrid(); // update aj v zozname
-            },
-
-            updatePlayerUI: function(video) {
-                document.getElementById('pViews').innerText = this.fmt(video.views);
-                document.getElementById('pLikes').innerText = this.fmt(video.likes);
-                
-                const btn = document.getElementById('btnLike');
-                if (video.liked) btn.classList.add('liked');
-                else btn.classList.remove('liked');
             },
 
             closePlayer: function() {
-                const vid = document.getElementById('mainVideo');
-                vid.pause();
-                vid.src = "";
-                document.getElementById('playerModal').classList.remove('show');
-                this.renderGrid();
+                const vid = document.getElementById('videoEl');
+                vid.pause(); vid.src = "";
+                document.getElementById('player').classList.remove('open');
+                this.renderUI();
+            },
+
+            likeVideo: function() {
+                const v = this.videos.find(x => x.id === this.currId);
+                if(v && v.likes < 33e6) {
+                    v.likes++; 
+                    this.saveMeta();
+                    document.getElementById('pLikes').innerText = '👍 ' + this.fmtNum(v.likes);
+                    document.getElementById('pLikes').style.color = '#ef4444';
+                }
             },
 
             deleteVideo: function() {
-                if (!confirm("Naozaj zmazať?")) return;
-                
-                // Zmazať z poľa
-                this.videos = this.videos.filter(v => v.id !== this.currentId);
-                this.saveMeta();
-
-                // Zmazať z DB
+                if(!confirm("Naozaj vymazať?")) return;
                 const tx = this.db.transaction('videos', 'readwrite');
-                tx.objectStore('videos').delete(this.currentId);
-
+                tx.objectStore('videos').delete(this.currId);
+                this.videos = this.videos.filter(x => x.id !== this.currId);
+                this.saveMeta();
                 this.closePlayer();
-                this.renderGrid();
             }
         };
 
-        // Spustenie
         window.onload = () => app.init();
     </script>
 </body>
